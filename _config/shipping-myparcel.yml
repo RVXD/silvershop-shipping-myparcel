@@ -1,0 +1,9 @@
+---
+Name: shipping-myparcel
+---
+# Register the MyParcel provider with the shipping-labels framework. It then appears in the CMS provider
+# dropdown and is selectable as the SiteConfig default. The API key is read from .env (SS_MYPARCEL_API_KEY),
+# never from config or SiteConfig.
+SilverShop\ShippingLabels\Provider\ProviderRegistry:
+  providers:
+    myparcel: '%$SilverShop\ShippingMyParcel\MyParcelProvider'
