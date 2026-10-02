@@ -155,9 +155,19 @@ class MyParcelProvider implements ShippingLabelProvider
         }
 
         try {
-            // Only unordered concepts can be deleted; an already-produced label will fail (returns false).
-            // MyParcel consignment ids are ints; find() is typed int.
-            MyParcelCollection::find((int) $ref, $key)->deleteConcepts();
+            // MyParcel's API only removes shipments still in "concept" status. Once a label is produced the shipment
+            // is registered/pre-announced and the API silently won't delete it — so attempt the delete and then VERIFY
+            // the shipment is actually gone before reporting success. (consignment ids are ints; find() is typed int.)
+            $id = (int) $ref;
+            MyParcelCollection::find($id, $key)->deleteConcepts();
+
+            foreach (MyParcelCollection::find($id, $key) as $consignment) {
+                if ($consignment->getBarcode() || $consignment->getStatus() > 0) {
+                    // Still registered at MyParcel — a produced label can't be cancelled via the API.
+                    return false;
+                }
+            }
+
             return true;
         } catch (Throwable $e) {
             return false;
