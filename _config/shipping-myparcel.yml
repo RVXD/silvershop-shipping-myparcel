@@ -6,4 +6,4 @@ Name: shipping-myparcel
 # never from config or SiteConfig.
 SilverShop\ShippingLabels\Provider\ProviderRegistry:
   providers:
-    myparcel: '%$SilverShop\ShippingMyParcel\MyParcelProvider'
+    myparcel: 'SilverShop\ShippingMyParcel\MyParcelProvider'
