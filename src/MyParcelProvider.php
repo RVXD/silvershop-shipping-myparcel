@@ -156,7 +156,8 @@ class MyParcelProvider implements ShippingLabelProvider
 
         try {
             // Only unordered concepts can be deleted; an already-produced label will fail (returns false).
-            MyParcelCollection::find($ref, $key)->deleteConcepts();
+            // MyParcel consignment ids are ints; find() is typed int.
+            MyParcelCollection::find((int) $ref, $key)->deleteConcepts();
             return true;
         } catch (Throwable $e) {
             return false;
