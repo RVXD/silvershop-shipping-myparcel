@@ -46,10 +46,23 @@ $label = $order->createShippingLabel('myparcel', ['service' => 'postnl_parcel'])
 // $label->LabelFile (PDF), $label->TrackingNumber (barcode), $label->TrackingUrl, $label->ProviderRef (consignment id)
 ```
 
-The label PDF is viewable at `/shippinglabels/label/{ID}`. `cancelLabel()` deletes an unordered concept; `track()`
-returns the barcode + public MyParcel track-trace URL.
+The label PDF is viewable at `/shippinglabels/label/{ID}`. `track()` returns the barcode + public MyParcel
+track-trace URL.
+
+## Cancelling labels
+
+`cancelLabel()` asks MyParcel to delete the shipment and then **verifies it is actually gone** before reporting success,
+so it never reports a cancellation that didn't happen.
+
+**Limitation:** MyParcel's API can only delete shipments still in **concept** status. Because this module **produces the
+label PDF when it creates the label** — which registers / pre-announces the shipment with the carrier — a created label
+is no longer a concept, so `cancelLabel()` on it returns `false` and leaves the label unchanged. To remove such a
+shipment, delete it in the **MyParcel dashboard** (possible the same day, before it is collected).
+
+Making created labels cancellable through the API would need a **concept-first flow** (register the shipment as a
+concept and produce the PDF only when printing) — a planned v2 change.
 
 ## Scope
 
 v1 = labels (PostNL, carrier-extensible via config). Planned: pickup-point + delivery-date selection in checkout,
-opt-in auto-create on payment, bulk label creation, more carriers/options.
+opt-in auto-create on payment, bulk label creation, concept-first create (API-cancellable labels), more carriers/options.
